@@ -32,9 +32,9 @@ get_mpi_dep(){
 	wget repo.tinycorelinux.net/4.x/x86/tcz/openmpi.tcz
 
 	tce-load -w -i gcc
-	tce-load -i glibc_base-dev.tcz
-	tce-load -i openmpi.tcz	
-	rm openmpi.tcz gcc.tcz glibc_base-dev.tcz
+	tce-load -c -i glibc_base-dev.tcz
+	tce-load -c -i openmpi.tcz	
+	rm openmpi.tcz glibc_base-dev.tcz
 }
 
 step() {
