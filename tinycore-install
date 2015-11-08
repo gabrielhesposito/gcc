@@ -37,6 +37,12 @@ get_mpi_dep(){
 	rm openmpi.tcz glibc_base-dev.tcz
 }
 
+fix_nmap(){
+	cd /usr/local/lib
+	sudo ln -s liblua.so.5.3 liblua.so.5.2
+	sudo ldconfig
+}
+
 step() {
 	echo -e "\e[1;36m+++ $1\e[0m";
 }
@@ -62,6 +68,7 @@ pause() {
 			# ------------------------------------
 			step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
 			get_mpi_dep
+			fix_nmap
 			exit 1;
 	fi
 
