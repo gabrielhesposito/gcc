@@ -31,11 +31,13 @@ get_mpi_dep(){
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavdevice.tcz
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavfilter.tcz
+	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavformat.tcz
     wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/ffmpeg.tcz
 
     tce-load -i ffmpeg.tcz
     tce-load -i libavdevice.tcz
     tce-load -i libavfilter.tcz
+    tce-load -i	libavformat.tcz
 
 	tce-load -w -i gcc
 	tce-load -w -i glibc_base-dev.tcz
