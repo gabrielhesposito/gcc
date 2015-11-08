@@ -33,6 +33,7 @@ get_mpi_dep(){
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavfilter.tcz
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavformat.tcz
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavcodec.tcz
+	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libswresample.tcz
 
     wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/ffmpeg.tcz
     wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libpostproc.tcz
@@ -43,6 +44,7 @@ get_mpi_dep(){
     tce-load -i	libavformat.tcz
     tce-load -i libavcodec.tcz
     tce-load -i libpostproc.tcz
+    tce-load -i libswresample.tcz
 
 	tce-load -w -i gcc
 	tce-load -w -i glibc_base-dev.tcz
