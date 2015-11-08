@@ -28,11 +28,10 @@
 #!/bin/sh
 
 get_mpi_dep(){
-	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/gcc.tcz
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
 	wget repo.tinycorelinux.net/4.x/x86/tcz/openmpi.tcz
 
-	tce-load -i gcc.tcz
+	tce-load -w -i gcc
 	tce-load -i glibc_base-dev.tcz
 	tce-load -i openmpi.tcz	
 	rm openmpi.tcz gcc.tcz glibc_base-dev.tcz
