@@ -1,0 +1,192 @@
+###############################################################################
+#
+# This script installs the tinycore linux from a the Core Bootable ISO. It is
+# a very tipical installation, using the whole disk as ext4 primary partition.
+#
+# 1) Download the Core ISO from http://tinycorelinux.net/downloads.html (11 MB)
+#
+# 2) Create a virtual machine and boot the ISO. (press [Return] when asked)
+#
+# 3) Download and run this script:
+#
+#         tce-load -w -i openssl.tcz                  <- enable ssl (for https)
+#         wget git.io/tinycore-install                <- download script
+#         sh tinycore-install                         <- run
+#
+# 3) What tinycore-install does:
+#    - Create and format a single partition using whole disk space
+#    - Install Kernel
+#    - Install GRUB
+#    - Setup GRUB to boot from disk
+# 
+# Credits:
+# By paulo.amaral(a)gmail(dot)com - https://github.com/paulera
+# Based on @smileymattj tutorial: http://www.youtube.com/watch?v=0QMY3V5XLj8
+#
+###############################################################################
+
+#!/bin/sh
+
+get_mpi_dep(){
+	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/gcc.tcz
+	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
+	wget repo.tinycorelinux.net/4.x/x86/tcz/openmpi.tcz
+
+	tce-load -i gcc.tcz
+	tce-load -i glibc_base-dev.tcz
+	tce-load -i openmpi.tcz	
+}
+
+step() {
+	echo -e "\e[1;36m+++ $1\e[0m";
+}
+
+ok() {
+	echo -e "\e[32m[success] \e[0m\n";
+}
+
+err() {
+	{ set +x; } 2>/dev/null
+	echo -e "\n\e[1;31mERROR! Check last command output for details.\e[0m";
+	echo -e "\nInstallation aborted.\n";
+	exit 1
+}
+
+pause() {
+	echo -e "\e[1;30mPress [return] for next step...\e[0m"
+	read
+}
+
+echo
+echo "This will setup your partitions, install kernel and grub, and any"
+echo "existing data will be lost. Just make sure you run this in a clean"
+echo "environment, from the bootable ISO, and you should be fine."
+echo
+read -p "Continue (y/n)? " -n 1 -r
+echo
+echo
+
+if [[ "$REPLY" = "Y" ]] || [[ "$REPLY" = "y" ]]; then
+
+	TOTAL=9
+	# ------------------------------------
+
+	step "0 of $TOTAL. Get dependecies for GLOURIOUS COMPUTER CLUSTER"
+	get_mpi_dep
+
+	# ------------------------------------
+	step "1 of $TOTAL. Create partition\n"
+
+
+	set -x
+	sudo sh -c 'echo -e "n\np\n1\n\n\n\n\na\n1\nw" | fdisk /dev/sda' || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "2 of $TOTAL. Format partition\n"
+	
+	set -x
+	sudo mkfs.ext4 /dev/sda1 || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	set -x
+	sudo rebuildfstab || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "3 of $TOTAL. Mount Disk and CD\n"
+	
+	set -x
+	sudo mount /mnt/sda1 || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	set -x
+	sudo mount /mnt/sr0 || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "4 of $TOTAL. Create directories\n"
+
+	set -x
+	sudo mkdir -p /mnt/sda1/boot/grub || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	set -x
+	sudo mkdir -p /mnt/sda1/tce/optional || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "5 of $TOTAL. Copy kernel\n"
+
+	set -x
+	sudo cp -p /mnt/sr0/boot/core.gz /mnt/sda1/boot/ || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	set -x
+	sudo cp -p /mnt/sr0/boot/vmlinuz /mnt/sda1/boot/ || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "7 of $TOTAL. Install grub\n"
+	
+	set -x
+	tce-load -w -i grub-0.97-splash.tcz || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	set -x
+	sudo cp -p /usr/lib/grub/i386-pc/* /mnt/sda1/boot/grub/ || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "8 of $TOTAL. Create menu for GRUB\n"
+
+	echo "This makes /home and /opt persistent in /sda1 . If you don't want this, edit"
+	echo "        /mnt/sda1/boot/grub/menu.lst"
+	echo "and REMOVE"
+	echo "        opt=sda1 home=sda1"
+
+	set -x
+	sudo sh -c 'echo -e "default 0\ntimeout 10\ntitle MicroCore\nkernel /boot/vmlinuz quiet opt=sda1 home=sda1\ninitrd /boot/core.gz" > /mnt/sda1/boot/grub/menu.lst' || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "9 of $TOTAL. Create master boot record\n"
+
+	set -x
+	sudo sh -c 'echo -e "root (hd0,0)\nsetup (hd0)\nquit" | grub --batch' || err
+	{ set +x; } 2>/dev/null
+	ok
+
+	pause
+
+	# ------------------------------------
+	step "Done!\n"
+	echo -e "Script finished. Remove ISO from drive and reboot.\n"
+
+fi
