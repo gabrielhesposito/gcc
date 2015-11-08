@@ -57,6 +57,14 @@ pause() {
 	read
 }
 
+	if [ $1 == 'openmpi' ];
+		then
+			# ------------------------------------
+			step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
+			get_mpi_dep
+			exit 1;
+	fi
+
 echo
 echo "This will setup your partitions, install kernel and grub, and any"
 echo "existing data will be lost. Just make sure you run this in a clean"
@@ -69,13 +77,6 @@ echo
 if [[ "$REPLY" = "Y" ]] || [[ "$REPLY" = "y" ]]; then
 
 	TOTAL=9
-
-	if [ $1 == 'openmpi' ];
-		then
-			# ------------------------------------
-			step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
-			get_mpi_dep
-	fi
 
 	# ------------------------------------
 	step "1 of $TOTAL. Create partition\n"
