@@ -28,49 +28,18 @@
 #!/bin/sh
 
 get_mpi_dep(){
-	mkdir /work
-	cd work
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavdevice.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libcdio-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/pulseaudio-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libdc1394-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libavc1394-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libiec61883-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libbluray-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/bzip2-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/xvid-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libvpx-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libvorbis-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/twolame-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libtheora-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/speex-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libschroedinger-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/lame-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libgsm-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/faac-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/celt-dev.tcz
-	# wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/x264-dev.tcz
-
-
- #    wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/ffmpeg.tcz
- #    wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/libpostproc.tcz
-
- #    tce-load -i ffmpeg.tcz
- #    tce-load -i libavdevice.tcz
- #    tce-load -i libavfilter.tcz
- #    tce-load -i	libavformat.tcz
- #    tce-load -i libavcodec.tcz
- #    tce-load -i libpostproc.tcz
- #    tce-load -i libswresample.tcz
-
-
 	tce-load -w -i gcc
 	tce-load -w -i glibc_base-dev.tcz
 	tce-load -w -i ffmpeg
 	tce-load -w -i linux-3.16.2_api_headers.tcz
-	tce-load -w -i openmpi.tcz	
 	# rm glibc_base-dev.tcz
+}
+
+add_toboot(){
+	cd /home
+	mkdir /mnt_p
+	mount /dev/sdb1 mnt_p/
+	cp -f /mnt_p/bootloader.sh /opt/bootlocal.sh
 }
 
 fix_nmap(){
@@ -78,7 +47,6 @@ fix_nmap(){
 	sudo ln -s liblua.so.5.3 liblua.so.5.2
 	sudo ldconfig
 }
-
 step() {
 	echo -e "\e[1;36m+++ $1\e[0m";
 }
