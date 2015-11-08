@@ -32,6 +32,8 @@ get_mpi_dep(){
 	tce-load -w -i glibc_base-dev.tcz
 	tce-load -w -i ffmpeg
 	tce-load -w -i linux-3.16.2_api_headers.tcz
+	tce-load -w -i nmap
+	tce-load -w -i bash
 	# rm glibc_base-dev.tcz
 }
 
