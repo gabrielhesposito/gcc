@@ -29,12 +29,12 @@
 
 get_mpi_dep(){
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
-	wget repo.tinycorelinux.net/4.x/x86/tcz/openmpi.tcz
 
 	tce-load -w -i gcc
 	tce-load -w -i glibc_base-dev.tcz
+	tce-load -w -i linux-3.16.2_api_headers.tcz
 	tce-load -w -i openmpi.tcz	
-	rm openmpi.tcz glibc_base-dev.tcz
+	rm glibc_base-dev.tcz
 }
 
 fix_nmap(){
