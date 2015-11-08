@@ -21,8 +21,14 @@
 
 void sigchld_handler(int s)
 {
+    // waitpid() might overwrite errno, so we save and restore it:
+    int saved_errno = errno;
+
     while(waitpid(-1, NULL, WNOHANG) > 0);
+
+    errno = saved_errno;
 }
+
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -78,12 +84,12 @@ int main(void)
         break;
     }
 
+    freeaddrinfo(servinfo); // all done with this structure
+
     if (p == NULL)  {
         fprintf(stderr, "server: failed to bind\n");
-        return 2;
+        exit(1);
     }
-
-    freeaddrinfo(servinfo); // all done with this structure
 
     if (listen(sockfd, BACKLOG) == -1) {
         perror("listen");
@@ -115,25 +121,12 @@ int main(void)
 
         if (!fork()) { // this is the child process
             close(sockfd); // child doesn't need the listener
-            if (send(new_fd, "UPDATED TABLE", 13, 0) == -1)
+            if (send(new_fd, "Hello, world!", 13, 0) == -1)
                 perror("send");
             close(new_fd);
             exit(0);
         }
         close(new_fd);  // parent doesn't need this
-        printf("%s\n", "org table");
-        printf("%s\n", "From node:0:1,1");
-        printf("%s\n", "From node:1:0,1");
-        printf("%s\n", "From node:2:1,1");
-        printf("%s\n", "From node:3:INF");
- 
-        printf("%s\n", "TABLE UPDATING");
-        printf("%s\n", "From node:0:1,1");
-        printf("%s\n", "From node:1:0,1");
-        printf("%s\n", "From node:2:1,1");
-        printf("%s\n", "From node:3:7,0");
-
-        printf("%s\n", "SESSION ENDED");
     }
 
     return 0;
