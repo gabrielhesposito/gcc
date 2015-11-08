@@ -35,6 +35,7 @@ get_mpi_dep(){
 	tce-load -i gcc.tcz
 	tce-load -i glibc_base-dev.tcz
 	tce-load -i openmpi.tcz	
+	rm openmpi.tcz gcc.tcz glibc_base-dev.tcz
 }
 
 step() {
