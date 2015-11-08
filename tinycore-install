@@ -69,10 +69,13 @@ echo
 if [[ "$REPLY" = "Y" ]] || [[ "$REPLY" = "y" ]]; then
 
 	TOTAL=9
-	# ------------------------------------
 
-	step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
-	get_mpi_dep
+	if [ $1 == 'openmpi' ];
+		then
+			# ------------------------------------
+			step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
+			get_mpi_dep
+	fi
 
 	# ------------------------------------
 	step "1 of $TOTAL. Create partition\n"
