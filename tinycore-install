@@ -72,7 +72,7 @@ if [[ "$REPLY" = "Y" ]] || [[ "$REPLY" = "y" ]]; then
 	TOTAL=9
 	# ------------------------------------
 
-	step "0 of $TOTAL. Get dependecies for GLOURIOUS COMPUTER CLUSTER"
+	step "0 of $TOTAL. Get dependecies for Get dependencies for GLORIOUS COMPUTER CLUSTER"
 	get_mpi_dep
 
 	# ------------------------------------
