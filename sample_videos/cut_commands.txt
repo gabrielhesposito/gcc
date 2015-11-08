@@ -1,0 +1,1 @@
+ffmpeg -ss 00:03:00 -i TEDxGE2014_Stallman05_HQ.ogv -t 00:02:00 -c copy sample_1.ogv
