@@ -1,5 +1,5 @@
 #!/bin/bash
-IP=$(ifconfig br0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')
+IP=$(ifconfig eth0 | grep 'inet addr' | cut -d: -f2 | awk '{print $1}')
 ##still needs to be dynamic no bother for dev
 ## find bottom of ip pool, first ip after router then sweep up
 RANGE=150-200
