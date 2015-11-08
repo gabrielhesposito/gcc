@@ -29,7 +29,9 @@
 
 get_mpi_dep(){
 	wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/glibc_base-dev.tcz
+    wget http://distro.ibiblio.org/tinycorelinux/6.x/x86/tcz/ffmpeg.tcz
 
+    tce-load -i ffmpeg.tcz
 	tce-load -w -i gcc
 	tce-load -w -i glibc_base-dev.tcz
 	tce-load -w -i linux-3.16.2_api_headers.tcz
@@ -63,7 +65,7 @@ pause() {
 	read
 }
 
-	if [ $1 == 'openmpi' ];
+	if [ $1 == 'dep' ];
 		then
 			# ------------------------------------
 			step "0 of $TOTAL. Get dependencies for GLORIOUS COMPUTER CLUSTER"
