@@ -112,7 +112,19 @@ int find(int arr[], int len, int n) {
 	return 0;
 }
 
-int main(void)
+int forkid = 0;
+
+int children[32];
+int nchildren = 0;
+
+char* commands[] = {"sh clientrun.sh", "echo \"second command\"", "echo \"third command\"", "close"};
+int ncommands = 4;
+
+void nextcommand() {
+	;
+}
+
+int startserver(void)
 {
 	int sockfd, new_fd;  // listen on sock_fd, new connection on new_fd
 	struct addrinfo hints, *servinfo, *p;
@@ -123,8 +135,8 @@ int main(void)
 	char s[INET6_ADDRSTRLEN];
 	int rv;
 
-	int children[32];
-	int numchildren = 0;
+	int i;
+//	char buf[256];
 
 	memset(&hints, 0, sizeof hints);
 	hints.ai_family = AF_INET;
@@ -181,17 +193,6 @@ int main(void)
 
 	printf("server: waiting for connections...\n");
 
-	//	char* msglist[] = {"one", "two", "three", "done"};
-	//	int msgnum = 4;
-	//	int msgind = 0;
-	int forkid = 0;
-
-	FILE* fil = fopen("clientrun.sh", "r");
-	////////
-	char* commands[] = {"sh clientrun.sh", "echo \"second command\"", "echo \"third command\"", "close"};
-	int ncommands = 4;
-	int i;
-	char buf[256];
 	while(1) {  // main accept() loop
 		sin_size = sizeof their_addr;
 		new_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
@@ -208,7 +209,7 @@ int main(void)
 		if (!fork()) { // this is the child process
 			close(sockfd); // child doesn't need the listener
 			//talk_to_child(forkid, new_fd);
-			if (find(children, numchildren, new_fd)) {
+			if (find(children, nchildren, new_fd)) {
 				printf("%d run\n", forkid);
 				if (forkid <= ncommands)
 					send(new_fd, commands[forkid - 1], strlen(commands[forkid - 1]) + 1, 0);
@@ -217,35 +218,29 @@ int main(void)
 			else
 				sendf(forkid, new_fd, "payload.tar"); // first run
 
-			//if (send(new_fd, "Hello, world!", 13, 0) == -1)
-			/*if (msgind >= msgnum) {
-			  if (send(new_fd, "close", 13, 0) == -1)
-			  perror("send");
-			  }
-			  else {
-			  if (send(new_fd, msglist[msgind], 13, 0) == -1)
-			  perror("send");
-			  }
-			  exit(0);*/
 			exit(0);
 		}
 		
-		if (!find(children, numchildren, new_fd)) {
-			children[numchildren] = new_fd;
-			numchildren++;
+		if (!find(children, nchildren, new_fd)) {
+			children[nchildren] = new_fd;
+			nchildren++;
 		}
 
 		close(new_fd);
 		forkid++;
-		if (forkid == 5) return 0;
-		//		msgind++;
-		int i;
-		for (i = 0; i < numchildren; i++) {
+		if (forkid > ncommands) return 0;
+
+		for (i = 0; i < nchildren; i++) {
 			printf("%d\t", children[i]);
 		}
 		printf("\n");
 		//close(new_fd);  // parent doesn't need this
 	}
+
+}
+
+int main(int argc, char** argv) {
+	startserver();
 
 	return 0;
 }
