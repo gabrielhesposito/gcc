@@ -219,8 +219,10 @@ int startserver(void)
 
 		if (find(children, nchildren, new_fd)) {
 
-			clone(NULL, (void*) 0, 0, (void*) 0);
-			//avail[navail++] = new_fd;
+			if (!vfork()) {
+				avail[navail++] = new_fd;
+				exit(0);
+			}
 
 			if (forkid <= ncommands)
 				send(new_fd, commands[forkid - 1], strlen(commands[forkid - 1]) + 1, 0);
