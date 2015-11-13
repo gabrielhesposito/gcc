@@ -117,11 +117,18 @@ int forkid = 0;
 int children[32];
 int nchildren = 0;
 
-char* commands[] = {"sh clientrun.sh", "echo \"second command\"", "echo \"third command\"", "close"};
+int avail[32];
+int navail = 0;
+
+char* commands[] = {"sh clientrun.sh", "sleep 5", "sleep 10", "close"};
 int ncommands = 4;
 
 void nextcommand() {
 	;
+}
+
+void initnode(int fd) {
+	sendf(forkid, fd, "payload.tar");
 }
 
 int startserver(void)
@@ -206,32 +213,37 @@ int startserver(void)
 				s, sizeof s);
 		printf("server: got connection from %s\n", s);
 
-		if (!fork()) { // this is the child process
-			close(sockfd); // child doesn't need the listener
+		//if (!fork()) { // this is the child process
+		//	close(sockfd); // child doesn't need the listener
 			//talk_to_child(forkid, new_fd);
-			if (find(children, nchildren, new_fd)) {
-				printf("%d run\n", forkid);
-				if (forkid <= ncommands)
-					send(new_fd, commands[forkid - 1], strlen(commands[forkid - 1]) + 1, 0);
-					//recv(new_fd, buf, 256, 0);
-			}
-			else
-				sendf(forkid, new_fd, "payload.tar"); // first run
 
-			exit(0);
+		if (find(children, nchildren, new_fd)) {
+
+			clone(NULL, (void*) 0, 0, (void*) 0);
+			//avail[navail++] = new_fd;
+
+			if (forkid <= ncommands)
+				send(new_fd, commands[forkid - 1], strlen(commands[forkid - 1]) + 1, 0);
+			//recv(new_fd, buf, 256, 0);
 		}
+		else { //first run
+			// should fork here
+			initnode(new_fd); 
+			// end fork
+			children[nchildren++] = new_fd;
+			//close(new_fd);
+		}
+
+		//	exit(0);
+		//}
 		
-		if (!find(children, nchildren, new_fd)) {
-			children[nchildren] = new_fd;
-			nchildren++;
-		}
 
 		close(new_fd);
 		forkid++;
 		if (forkid > ncommands) return 0;
 
-		for (i = 0; i < nchildren; i++) {
-			printf("%d\t", children[i]);
+		for (i = 0; i < navail; i++) {
+			printf("%d\t", avail[i]);
 		}
 		printf("\n");
 		//close(new_fd);  // parent doesn't need this
