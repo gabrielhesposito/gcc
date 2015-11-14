@@ -86,7 +86,13 @@ void talk_to_child(int id, int childfd) {
 	fclose(f);
 }*/
 
-void sendf(int id, int childfd, char* fname) {
+
+int children[32];
+int nchildren = 0;
+
+FILE *comqf, *nodelf;
+
+void sendf(int childfd, char* fname) {
 	FILE* f = fopen(fname, "r");
 	char byte;
 	char buf[1];
@@ -111,20 +117,6 @@ int find(int arr[], int len, int n) {
 			return 1;
 	return 0;
 }
-
-int forkid = 0;
-
-int children[32];
-int nchildren = 0;
-
-//int avail[32];
-//int navail = 0;
-
-//char* comq[32];
-//int comc = 0;
-//int ncom = 0;
-
-FILE *comqf, *nodelf;
 
 void nextcommand() {
 	;
@@ -156,29 +148,9 @@ void sendcommand(char *com) {
 
 }
 
-/*void setnextcommand(char *line) {
-	comq[ncom++] = line;
-}*/
-
 void initnode(int fd) {
-	sendf(forkid, fd, "payload.tar");
+	sendf(fd, "payload.tar");
 }
-
-/*void comserver(void) {
-	int i;
-	while (1) {
-		if (navail)
-			if (comc + 1 < ncom) {
-				send(avail[0], comq[comc], strlen(comq[comc]) + 1, 0);
-				close(avail[0]);
-				printf("sent to %d: %s", avail[0], comq[comc]);
-				comc++;
-				navail--;
-				for (i = 0; i < navail; ++i)
-					avail[i] = avail[i + 1];
-			}
-	}
-}*/
 
 int startserver(void)
 {
@@ -264,15 +236,8 @@ int startserver(void)
 				s, sizeof s);
 		printf("server: got connection from %s\n", s);
 
-		//if (!fork()) { // this is the child process
-		//	close(sockfd); // child doesn't need the listener
-			//talk_to_child(forkid, new_fd);
 
 		if (find(children, nchildren, new_fd)) {
-
-			/*if (!find(avail, navail, new_fd)) {
-				avail[navail++] = new_fd;
-			}*/
 
 			comi = 0;
 			comqf = fopen("comq.txt", "r");
@@ -301,44 +266,14 @@ int startserver(void)
 				fclose(nodelf);
 			}
 
-			//if (forkid <= ncom)
-				//send(new_fd, commands[forkid - 1], strlen(commands[forkid - 1]) + 1, 0);
-			//recv(new_fd, buf, 256, 0);
 		}
 		else { //first run
-			// should fork here
+			// should maybe fork here
 			initnode(new_fd); 
 			// end fork
 			children[nchildren++] = new_fd;
 		}
 
-		//	exit(0);
-		//}
-		
-
-		//close(new_fd);
-		//forkid++;
-		//if (forkid > ncom) return 0;
-
-		/*for (i = 0; i < navail; i++) {
-			printf("%d\t", avail[i]);
-		}
-		printf("\n");*/
-		//close(new_fd);  // parent doesn't need this
-		/*printf("1: nchildren: %d\tnavail: %d\n", nchildren, navail);
-		if (navail) {
-			if (comc < ncom) {
-				send(avail[0], comq[comc], strlen(comq[comc]) + 1, 0);
-				close(avail[0]);
-				printf("sent to %d: %s\n", avail[0], comq[comc]);
-				comc++;
-				navail--;
-				for (i = 0; i < navail; ++i)
-					avail[i] = avail[i + 1];
-			}
-			else printf("x\n");
-		}
-		printf("2: nchildren: %d\tnavail: %d\n", nchildren, navail);*/
 	}
 
 	return 0;
@@ -347,15 +282,17 @@ int startserver(void)
 
 int main(int argc, char **argv) {
 
+	if (!fork()) {
+		startserver();
+		exit(0);
+		return 0;
+	}
 	sendcommand("sh clientrun.sh");
 	sendcommand("sleep 5");
 	sendcommand("sleep 7");
 	sendcommand("close");
 
-	startserver();
 	printf("we made it\n");
-	
-	//{"sh clientrun.sh", "sleep 1", "sleep 1", "close"};
 
 	return 0;
 }
