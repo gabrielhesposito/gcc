@@ -6,26 +6,45 @@
 #include <unistd.h>
 #include <errno.h>
 
+struct SCHEMA_RULES
+{
+/*CONTROLS LOG TO STDROUT*/ 
+int ONOFF;
+};
+
+struct TABLE
+{
+
+};
+
+
+ void logger(int ONOFF)
+{
+    if(ONOFF)
+    {
+        printf("%s\n ok we log");
+    }
+}
+
 /*Give a DB name to use*/
 static int  USEDB(char *NAME)
 {
     DIR* FD;
     if (NULL == (FD = opendir (NAME))) 
     {
+        // fprintf(stderr, "Error : Failed to open input directory - %s\n", strerror(errno));
         fprintf(stderr, "Error : Failed to open input directory - %s\n", strerror(errno));
         // fclose(common_file);
-
         return 0;
     }
-
     return 1;
-
 }
 
 /*
-o
-
+creates a new file, or replaces
+returns 1 on success, 0 on failure
 */
+
 static int  INSERT(char * IP, char * FIELD_LIST, char * VALUE_LIST)
 {
 
@@ -37,8 +56,14 @@ static int  DELETE(char *IP, char * FIELD_LIST, char * VALUE_LIST)
 
 }
 
-/**/
+/*Reads a value */
 static int  READ()
+{
+
+}
+
+/*This brings a table in*/
+static int TABLE_LOAD()
 {
 
 }
@@ -47,8 +72,11 @@ static int  READ()
 int main(int argc, char **argv)
 {
 
+    struct SCHEMA_RULES local_rules;
+    local_rules.ONOFF=0;
     int check_use = USEDB(argv[1]);
     printf("%i This is what happends\n",check_use);
+    logger(local_rules.ONOFF);
     // DIR* FD;
     // struct dirent* in_file;
     // FILE    *common_file;

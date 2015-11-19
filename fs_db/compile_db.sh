@@ -1,10 +1,16 @@
 #!/bin/bash
-VAR=$(gcc database.c >> error.txt)
-if ! [[ -z ${VAR+x} ]]; 
+VAR=$(gcc database.c);
+x="hell bor";
+if [ -z ${VAR+x} ]; 
 	then
-		echo"No GCC errors found...continuing with valgrind"
-		 valgrind ./a.out DB >> error.txt 	
+		echo "=============================================";
+		echo "GCC errors found...Dont Worry! Check the Log!";
+		echo "=============================================";
+		echo "$VAR" >> "error.txt"; 	
 	else
-		echo"GCC errors found...Dont Worry! Check the Log!"
+		echo "==============================================";
+		echo "No GCC errors found...continuing with valgrind";
+		echo "==============================================";
+		valgrind ./a.out DB >> "error.txt" 2>&1;
 fi
 
